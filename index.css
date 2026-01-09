@@ -1,0 +1,29 @@
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Montserrat', sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-50 overflow-x-hidden;
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+@layer components {
+  .bg-gradient-stage {
+    background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+    min-height: 100vh;
+  }
+  .glow-gold {
+    box-shadow: 0 0 30px rgba(234, 179, 8, 0.3);
+  }
+  .option-card-hover {
+    @apply transition-all duration-300;
+  }
+  .option-card-hover:hover:not(:disabled) {
+    @apply -translate-y-1 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)];
+  }
+}
