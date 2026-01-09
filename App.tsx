@@ -1,19 +1,10 @@
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { generateQuestion, getHostCommentary } from './geminiService';
 import { GameState, Language, Question, PRIZES } from './types';
 import { PrizeLadder } from './components/PrizeLadder';
 import { Lifelines } from './components/Lifelines';
-import { Trophy, RotateCcw, Loader2, CheckCircle2, XCircle, Volume2, VolumeX, Sparkles, Info, Languages } from 'lucide-react';
-
-const AUDIO_URLS = {
-  background: 'https://assets.mixkit.co/music/preview/mixkit-mysterious-prowl-1105.mp3', 
-  correct: 'https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3', 
-  incorrect: 'https://assets.mixkit.co/sfx/preview/mixkit-falling-game-over-1942.mp3', 
-  lifeline: 'https://assets.mixkit.co/sfx/preview/mixkit-magic-notification-ring-2359.mp3',
-  hover: 'https://assets.mixkit.co/sfx/preview/mixkit-interface-hint-notification-911.mp3',
-  select: 'https://assets.mixkit.co/sfx/preview/mixkit-modern-click-box-check-1120.mp3',
-};
+import { Trophy, RotateCcw, Loader2, CheckCircle2, XCircle, Sparkles, Info, Languages } from 'lucide-react';
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>({
@@ -33,25 +24,6 @@ const App: React.FC = () => {
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [hiddenOptions, setHiddenOptions] = useState<number[]>([]);
   const [showStudentsPoll, setShowStudentsPoll] = useState<number[] | null>(null);
-  const [isMuted, setIsMuted] = useState(false);
-
-  const bgMusicRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    bgMusicRef.current = new Audio(AUDIO_URLS.background);
-    bgMusicRef.current.loop = true;
-    bgMusicRef.current.volume = 0.2;
-    return () => { if (bgMusicRef.current) bgMusicRef.current.pause(); };
-  }, []);
-
-  useEffect(() => { if (bgMusicRef.current) bgMusicRef.current.muted = isMuted; }, [isMuted]);
-
-  const playSFX = (url: string, volume: number = 0.5) => {
-    if (isMuted) return;
-    const audio = new Audio(url);
-    audio.volume = volume;
-    audio.play().catch(e => console.debug("SFX play blocked", e));
-  };
 
   const loadNextQuestion = useCallback(async (lang: Language, level: number) => {
     setGameState(prev => ({ ...prev, isLoading: true }));
@@ -70,7 +42,6 @@ const App: React.FC = () => {
 
   const startGame = (lang: Language) => {
     setGameStarted(true);
-    if (bgMusicRef.current) bgMusicRef.current.play().catch(e => console.debug("Audio interact", e));
     setGameState(prev => ({ 
       ...prev, language: lang, currentLevel: 0, score: 0, isGameOver: false, isWinner: false, 
       lifelines: { skip: 3, cards: true, students: true } 
@@ -80,17 +51,14 @@ const App: React.FC = () => {
 
   const handleAnswer = async (index: number) => {
     if (feedback || gameState.isLoading || !gameState.currentQuestion) return;
-    playSFX(AUDIO_URLS.select, 0.4);
     setSelectedOption(index);
     const isCorrect = index === gameState.currentQuestion.correctIndex;
 
     setTimeout(async () => {
       if (isCorrect) {
         setFeedback('correct');
-        playSFX(AUDIO_URLS.correct, 0.6);
         const nextLevel = gameState.currentLevel + 1;
         if (nextLevel >= PRIZES.length) {
-          if (bgMusicRef.current) bgMusicRef.current.pause();
           setGameState(prev => ({ ...prev, isWinner: true, isGameOver: true, lastMessage: "PARABÉNS! VOCÊ É O NOVO MILIONÁRIO DOS IDIOMAS!" }));
         } else {
           setTimeout(() => {
@@ -100,27 +68,20 @@ const App: React.FC = () => {
         }
       } else {
         setFeedback('incorrect');
-        playSFX(AUDIO_URLS.incorrect, 0.6);
         const msg = await getHostCommentary('incorrect');
         setGameState(prev => ({ ...prev, isGameOver: true, lastMessage: msg }));
       }
     }, 1500);
   };
 
-  const useSkip = () => { if (gameState.lifelines.skip > 0 && !feedback) { playSFX(AUDIO_URLS.lifeline, 0.5); setGameState(prev => ({ ...prev, lifelines: { ...prev.lifelines, skip: prev.lifelines.skip - 1 } })); loadNextQuestion(gameState.language, gameState.currentLevel); } };
-  const useCards = () => { if (gameState.lifelines.cards && gameState.currentQuestion && !feedback) { playSFX(AUDIO_URLS.lifeline, 0.5); const correct = gameState.currentQuestion.correctIndex; const wrong = [0, 1, 2, 3].filter(i => i !== correct).sort(() => Math.random() - 0.5); setHiddenOptions(wrong.slice(0, 2)); setGameState(prev => ({ ...prev, lifelines: { ...prev.lifelines, cards: false } })); } };
-  const useStudents = () => { if (gameState.lifelines.students && gameState.currentQuestion && !feedback) { playSFX(AUDIO_URLS.lifeline, 0.5); const poll = [0,0,0,0]; let rem = 100; const cor = gameState.currentQuestion.correctIndex; const v = Math.floor(Math.random() * 30) + 50; poll[cor] = v; rem -= v; [0,1,2,3].filter(i => i !== cor).forEach((idx, i) => { if (i === 2) poll[idx] = rem; else { const val = Math.floor(Math.random() * rem); poll[idx] = val; rem -= val; } }); setShowStudentsPoll(poll); setGameState(prev => ({ ...prev, lifelines: { ...prev.lifelines, students: false } })); } };
+  const useSkip = () => { if (gameState.lifelines.skip > 0 && !feedback) { setGameState(prev => ({ ...prev, lifelines: { ...prev.lifelines, skip: prev.lifelines.skip - 1 } })); loadNextQuestion(gameState.language, gameState.currentLevel); } };
+  const useCards = () => { if (gameState.lifelines.cards && gameState.currentQuestion && !feedback) { const correct = gameState.currentQuestion.correctIndex; const wrong = [0, 1, 2, 3].filter(i => i !== correct).sort(() => Math.random() - 0.5); setHiddenOptions(wrong.slice(0, 2)); setGameState(prev => ({ ...prev, lifelines: { ...prev.lifelines, cards: false } })); } };
+  const useStudents = () => { if (gameState.lifelines.students && gameState.currentQuestion && !feedback) { const poll = [0,0,0,0]; let rem = 100; const cor = gameState.currentQuestion.correctIndex; const v = Math.floor(Math.random() * 30) + 50; poll[cor] = v; rem -= v; [0,1,2,3].filter(i => i !== cor).forEach((idx, i) => { if (i === 2) poll[idx] = rem; else { const val = Math.floor(Math.random() * rem); poll[idx] = val; rem -= val; } }); setShowStudentsPoll(poll); setGameState(prev => ({ ...prev, lifelines: { ...prev.lifelines, students: false } })); } };
 
   if (!gameStarted) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="max-w-4xl w-full bg-slate-900/90 rounded-[2.5rem] p-8 md:p-16 border-4 border-yellow-500 glow-gold text-center relative flex flex-col items-center">
-          <div className="absolute top-8 right-8">
-            <button onClick={() => setIsMuted(!isMuted)} className="p-3 bg-slate-800 rounded-full text-slate-400 hover:text-white transition-all hover:scale-110 active:scale-90">
-              {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
-            </button>
-          </div>
-          
           <div className="mb-8 p-6 bg-yellow-500/10 rounded-full border-2 border-yellow-500/30">
             <Languages className="w-16 h-16 text-yellow-500" />
           </div>
@@ -137,7 +98,6 @@ const App: React.FC = () => {
               <button 
                 key={lang} 
                 onClick={() => startGame(lang)} 
-                onMouseEnter={() => playSFX(AUDIO_URLS.hover, 0.1)}
                 className="group relative bg-blue-900/40 hover:bg-blue-600 border-2 border-blue-500/50 hover:border-blue-400 py-5 px-4 rounded-2xl text-base font-black transition-all hover:-translate-y-1 hover:shadow-xl active:scale-95"
               >
                 <span className="relative z-10">{lang}</span>
@@ -177,9 +137,6 @@ const App: React.FC = () => {
                 <div className="text-[10px] text-blue-400 font-black uppercase tracking-widest">Idioma</div>
                 <div className="text-lg font-bold text-white">{gameState.language}</div>
               </div>
-              <button onClick={() => setIsMuted(!isMuted)} className="p-3 bg-slate-800 rounded-full text-slate-400 hover:text-white transition-all active:scale-90">
-                {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
-              </button>
             </div>
           </div>
 
@@ -253,7 +210,6 @@ const App: React.FC = () => {
                         key={idx} 
                         disabled={!!feedback || gameState.isLoading || isHidden} 
                         onClick={() => handleAnswer(idx)}
-                        onMouseEnter={() => !feedback && !isHidden && playSFX(AUDIO_URLS.hover, 0.1)}
                         className={`group relative p-6 rounded-3xl border-2 text-left font-bold transition-all duration-300 option-card-hover ${isHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}
                           ${isSelected && !feedback ? 'border-yellow-400 bg-yellow-400/20 ring-4 ring-yellow-400/20 shadow-2xl scale-[1.02]' : ''}
                           ${showCorrect ? 'border-green-500 bg-green-500/20 shadow-[0_0_20px_rgba(34,197,94,0.3)]' : ''}
