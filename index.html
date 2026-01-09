@@ -7,82 +7,27 @@
     <title>Show do Idioma</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            animation: {
-              'float': 'float 3s ease-in-out infinite',
-              'mouth': 'mouth-talk 0.15s ease-in-out infinite',
-              'blink': 'blink 4s infinite',
-              'tilt': 'head-tilt 1s ease-in-out infinite',
-              'jump': 'celebrate-jump 0.4s ease-in-out infinite',
-              'droop': 'sad-droop 4s ease-in-out infinite',
-              'eyes-think': 'eyes-think 1.5s ease-in-out infinite',
-            }
-          }
-        }
-      }
-    </script>
-    <style type="text/tailwindcss">
-        @layer base {
-          body {
-            @apply bg-slate-950 text-slate-50 overflow-x-hidden;
+    <style>
+        body {
             font-family: 'Montserrat', sans-serif;
-          }
+            background-color: #020617;
+            color: #f8fafc;
+            margin: 0;
+            overflow-x: hidden;
         }
-
-        @layer components {
-          .glow-blue {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-          }
-          .glow-gold {
-            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
-          }
-          .bg-gradient-stage {
+        .bg-gradient-stage {
             background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
-          }
-          .host-shadow {
-            filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.4));
-          }
-          .option-card-hover {
-            @apply transition-all duration-300;
-          }
-          .option-card-hover:hover {
-            @apply -translate-y-1 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)];
-          }
+            min-height: 100vh;
         }
-
-        /* Keyframes para as animações do Host */
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-12px); }
+        .glow-gold {
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
         }
-        @keyframes mouth-talk {
-          0%, 100% { transform: scaleY(1); }
-          50% { transform: scaleY(0.2); }
+        .option-card-hover {
+            transition: all 0.3s ease;
         }
-        @keyframes blink {
-          0%, 90%, 100% { transform: scaleY(1); }
-          95% { transform: scaleY(0.1); }
-        }
-        @keyframes head-tilt {
-          0%, 100% { transform: rotate(0deg); }
-          25% { transform: rotate(-2deg); }
-          75% { transform: rotate(2deg); }
-        }
-        @keyframes celebrate-jump {
-          0%, 100% { transform: translateY(0) scale(1); }
-          50% { transform: translateY(-25px) scale(1.1); }
-        }
-        @keyframes sad-droop {
-          0%, 100% { transform: scaleY(1); }
-          50% { transform: scaleY(0.95) translateY(5px); }
-        }
-        @keyframes eyes-think {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-2px); }
-          75% { transform: translateX(2px); }
+        .option-card-hover:hover:not(:disabled) {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
         }
     </style>
 <script type="importmap">
