@@ -4,7 +4,7 @@ import { generateQuestion, getHostCommentary } from './geminiService';
 import { GameState, Language, Question, PRIZES } from './types';
 import { PrizeLadder } from './components/PrizeLadder';
 import { Lifelines } from './components/Lifelines';
-import { Trophy, RotateCcw, Loader2, CheckCircle2, XCircle, Volume2, VolumeX, Sparkles, Info } from 'lucide-react';
+import { Trophy, RotateCcw, Loader2, CheckCircle2, XCircle, Volume2, VolumeX, Sparkles, Info, Languages } from 'lucide-react';
 
 const AUDIO_URLS = {
   background: 'https://assets.mixkit.co/music/preview/mixkit-mysterious-prowl-1105.mp3', 
@@ -25,7 +25,7 @@ const App: React.FC = () => {
     language: 'Inglês',
     lifelines: { skip: 3, cards: true, students: true },
     isLoading: false,
-    lastMessage: 'Bem-vindo ao Show do Idioma! Escolha um idioma para começar.',
+    lastMessage: 'Bem-vindo ao Show do Idioma! Selecione o idioma que deseja dominar.',
   });
 
   const [gameStarted, setGameStarted] = useState(false);
@@ -64,13 +64,13 @@ const App: React.FC = () => {
       setHiddenOptions([]);
       setShowStudentsPoll(null);
     } catch (error) {
-      setGameState(prev => ({ ...prev, isLoading: false, lastMessage: "Erro técnico ao carregar a questão. Tente novamente." }));
+      setGameState(prev => ({ ...prev, isLoading: false, lastMessage: "Erro ao gerar questão. Tente novamente." }));
     }
   }, []);
 
   const startGame = (lang: Language) => {
     setGameStarted(true);
-    if (bgMusicRef.current) bgMusicRef.current.play().catch(e => console.debug("Audio play blocked", e));
+    if (bgMusicRef.current) bgMusicRef.current.play().catch(e => console.debug("Audio interact", e));
     setGameState(prev => ({ 
       ...prev, language: lang, currentLevel: 0, score: 0, isGameOver: false, isWinner: false, 
       lifelines: { skip: 3, cards: true, students: true } 
@@ -114,30 +114,43 @@ const App: React.FC = () => {
   if (!gameStarted) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="max-w-3xl w-full bg-slate-900/90 rounded-3xl p-10 border-4 border-yellow-500 glow-gold text-center relative flex flex-col items-center">
-          <div className="absolute top-4 right-4">
-            <button onClick={() => setIsMuted(!isMuted)} className="p-2 bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors">
-              {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+        <div className="max-w-4xl w-full bg-slate-900/90 rounded-[2.5rem] p-8 md:p-16 border-4 border-yellow-500 glow-gold text-center relative flex flex-col items-center">
+          <div className="absolute top-8 right-8">
+            <button onClick={() => setIsMuted(!isMuted)} className="p-3 bg-slate-800 rounded-full text-slate-400 hover:text-white transition-all hover:scale-110 active:scale-90">
+              {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
             </button>
           </div>
-          <div className="mb-6 bg-yellow-500/10 p-6 rounded-full border border-yellow-500/20">
-            <Sparkles className="w-16 h-16 text-yellow-500" />
+          
+          <div className="mb-8 p-6 bg-yellow-500/10 rounded-full border-2 border-yellow-500/30">
+            <Languages className="w-16 h-16 text-yellow-500" />
           </div>
-          <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 mb-4 uppercase italic">Show do Idioma</h1>
-          <p className="text-blue-300 text-lg mb-10 font-semibold italic">"Pronto para ser um poliglota milionário?"</p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10 w-full">
+
+          <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 mb-6 uppercase italic leading-none tracking-tighter">
+            Show do Idioma
+          </h1>
+          <p className="text-blue-300 text-xl mb-12 font-bold italic opacity-80 uppercase tracking-widest">
+            "Sua jornada para o milhão linguístico começa aqui"
+          </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-12 w-full max-w-2xl">
             {(['Inglês', 'Espanhol', 'Francês', 'Alemão', 'Italiano', 'Português (PT)'] as Language[]).map(lang => (
               <button 
                 key={lang} 
                 onClick={() => startGame(lang)} 
                 onMouseEnter={() => playSFX(AUDIO_URLS.hover, 0.1)}
-                className="bg-blue-900/40 hover:bg-blue-600 border-2 border-blue-500/50 py-4 px-2 rounded-xl text-sm font-bold transition-all hover:-translate-y-1"
+                className="group relative bg-blue-900/40 hover:bg-blue-600 border-2 border-blue-500/50 hover:border-blue-400 py-5 px-4 rounded-2xl text-base font-black transition-all hover:-translate-y-1 hover:shadow-xl active:scale-95"
               >
-                {lang}
+                <span className="relative z-10">{lang}</span>
+                <div className="absolute inset-0 bg-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
               </button>
             ))}
           </div>
-          <div className="text-slate-500 text-[10px] uppercase tracking-widest font-bold">Powered by Gemini AI • Real-time Education</div>
+
+          <div className="flex items-center gap-2 text-slate-500 text-xs uppercase tracking-[0.4em] font-black">
+            <Sparkles size={12} className="text-yellow-500" />
+            <span>AI Powered Education</span>
+            <Sparkles size={12} className="text-yellow-500" />
+          </div>
         </div>
       </div>
     );
@@ -145,66 +158,89 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
-      <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 items-start justify-center">
+      <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 items-stretch justify-center">
+        
         <div className="flex-1 w-full flex flex-col gap-6">
-          {/* Header Barra de Progresso */}
-          <div className="flex justify-between items-center bg-slate-900/80 p-4 rounded-2xl border border-blue-500/30 backdrop-blur-sm">
-            <div className="flex items-center gap-3">
-              <div className="bg-yellow-500 text-slate-950 p-2 rounded-lg font-black text-xl">{gameState.currentLevel + 1}</div>
+          {/* Header */}
+          <div className="flex justify-between items-center bg-slate-900/80 p-5 rounded-3xl border border-blue-500/30 backdrop-blur-md shadow-lg">
+            <div className="flex items-center gap-4">
+              <div className="bg-yellow-500 text-slate-950 w-12 h-12 flex items-center justify-center rounded-xl font-black text-2xl shadow-lg">
+                {gameState.currentLevel + 1}
+              </div>
               <div>
-                <div className="text-[10px] text-blue-400 font-bold uppercase">Nível Atual</div>
-                <div className="text-xl font-black text-yellow-500">{PRIZES[gameState.currentLevel]}</div>
+                <div className="text-[10px] text-blue-400 font-black uppercase tracking-widest">Prêmio em Jogo</div>
+                <div className="text-2xl font-black text-yellow-500 leading-none">{PRIZES[gameState.currentLevel]}</div>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-bold text-blue-200 hidden md:inline">{gameState.language}</span>
-              <button onClick={() => setIsMuted(!isMuted)} className="p-2 bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors">
+            <div className="flex items-center gap-6">
+              <div className="text-right hidden md:block">
+                <div className="text-[10px] text-blue-400 font-black uppercase tracking-widest">Idioma</div>
+                <div className="text-lg font-bold text-white">{gameState.language}</div>
+              </div>
+              <button onClick={() => setIsMuted(!isMuted)} className="p-3 bg-slate-800 rounded-full text-slate-400 hover:text-white transition-all active:scale-90">
                 {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
               </button>
             </div>
           </div>
 
-          {/* Área Principal da Pergunta */}
-          <div className="relative min-h-[500px] bg-slate-900/90 rounded-3xl p-6 md:p-10 border-2 border-blue-500/50 shadow-2xl flex flex-col items-center">
+          {/* Área do Quiz */}
+          <div className="relative flex-1 bg-slate-900/90 rounded-[2.5rem] p-8 md:p-12 border-2 border-blue-500/30 shadow-2xl flex flex-col items-center overflow-hidden">
             
-            {/* Mensagem da IA */}
+            {/* Mensagem da IA / Assistente */}
             {!gameState.isGameOver && (
-              <div className="w-full flex items-start gap-3 mb-10 bg-blue-900/20 p-4 rounded-2xl border border-blue-500/20 animate-in fade-in slide-in-from-top-2 duration-700">
-                <Info className="text-blue-400 flex-shrink-0 mt-1" size={18} />
-                <p className="text-sm md:text-base italic text-blue-100 leading-relaxed">
-                  {gameState.lastMessage}
-                </p>
+              <div className="w-full mb-10 group">
+                <div className="relative bg-blue-900/20 p-5 rounded-2xl border border-blue-500/20 backdrop-blur-sm animate-in fade-in slide-in-from-top-4 duration-700">
+                   <div className="absolute -top-3 left-6 px-3 py-1 bg-blue-600 rounded-full text-[10px] font-black uppercase tracking-tighter">Dica da IA</div>
+                   <p className="text-sm md:text-base italic text-blue-100 leading-relaxed font-medium">
+                    "{gameState.lastMessage}"
+                  </p>
+                </div>
               </div>
             )}
 
             {gameState.isLoading ? (
-              <div className="flex-1 flex flex-col items-center justify-center gap-4 py-10">
-                <Loader2 className="w-16 h-16 text-blue-500 animate-spin" />
-                <p className="text-blue-300 font-bold animate-pulse text-lg">Gerando nova questão...</p>
+              <div className="flex-1 flex flex-col items-center justify-center gap-6 py-20 w-full">
+                <div className="relative">
+                  <Loader2 className="w-20 h-20 text-blue-500 animate-spin" />
+                  <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-yellow-500 animate-pulse" />
+                </div>
+                <div className="text-center">
+                  <p className="text-blue-300 font-black text-xl uppercase tracking-tighter animate-pulse">Consultando Redes Neurais...</p>
+                  <p className="text-slate-500 text-xs mt-2 font-bold uppercase tracking-widest">Preparando desafio de nível {gameState.currentLevel + 1}</p>
+                </div>
               </div>
             ) : gameState.isGameOver ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center py-6 animate-in fade-in zoom-in w-full">
-                {gameState.isWinner ? <Trophy className="w-24 h-24 text-yellow-500 mb-6 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]" /> : <XCircle className="w-24 h-24 text-red-500 mb-6" />}
-                <h2 className="text-4xl font-black mb-4 uppercase italic text-white">{gameState.isWinner ? "MILIONÁRIO!" : "FIM DE JOGO!"}</h2>
-                <p className="text-slate-300 mb-8 max-w-md italic">"{gameState.lastMessage}"</p>
-                <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 mb-8 w-full max-w-sm">
-                  <p className="text-xs text-slate-400 uppercase font-bold mb-1">Prêmio Final</p>
-                  <p className="text-3xl font-black text-yellow-500">{PRIZES[Math.max(0, gameState.currentLevel - 1)]}</p>
+              <div className="flex-1 flex flex-col items-center justify-center text-center py-10 animate-in fade-in zoom-in w-full">
+                <div className={`p-8 rounded-full mb-8 ${gameState.isWinner ? 'bg-yellow-500/20 border-4 border-yellow-500 glow-gold' : 'bg-red-500/20 border-4 border-red-500'}`}>
+                  {gameState.isWinner ? <Trophy className="w-24 h-24 text-yellow-500" /> : <XCircle className="w-24 h-24 text-red-500" />}
                 </div>
+                <h2 className="text-5xl md:text-6xl font-black mb-6 uppercase italic text-white tracking-tighter">
+                  {gameState.isWinner ? "O NOVO MILIONÁRIO!" : "VOCÊ PAROU AQUI!"}
+                </h2>
+                <p className="text-blue-200 mb-10 max-w-md text-lg font-medium opacity-80 italic">"{gameState.lastMessage}"</p>
+                
+                <div className="bg-slate-800/40 p-8 rounded-[2rem] border-2 border-slate-700/50 mb-10 w-full max-w-md backdrop-blur-sm">
+                  <p className="text-xs text-slate-500 uppercase font-black tracking-widest mb-2">Prêmio Conquistado</p>
+                  <p className="text-5xl font-black text-yellow-500 tracking-tighter">{PRIZES[Math.max(0, gameState.currentLevel - 1)]}</p>
+                </div>
+                
                 <button 
                   onClick={() => setGameStarted(false)} 
-                  className="bg-blue-600 hover:bg-blue-500 text-white font-black py-4 px-12 rounded-full flex items-center gap-3 shadow-lg hover:scale-105 transition-all active:scale-95"
+                  className="bg-blue-600 hover:bg-blue-500 text-white font-black py-5 px-16 rounded-full flex items-center gap-4 shadow-xl hover:scale-105 transition-all active:scale-95 group"
                 >
-                  <RotateCcw size={20} /> NOVO JOGO
+                  <RotateCcw size={24} className="group-hover:rotate-[-45deg] transition-transform" />
+                  <span className="uppercase tracking-widest">Tentar de Novo</span>
                 </button>
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center w-full max-w-3xl">
-                <h3 className="text-2xl md:text-3xl font-bold text-white text-center mb-10 min-h-[80px] leading-tight">
-                  {gameState.currentQuestion?.text}
-                </h3>
+              <div className="flex-1 flex flex-col items-center w-full max-w-4xl">
+                <div className="text-center w-full mb-12">
+                  <h3 className="text-3xl md:text-4xl font-black text-white leading-[1.15] min-h-[100px] flex items-center justify-center tracking-tight">
+                    {gameState.currentQuestion?.text}
+                  </h3>
+                </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
                   {gameState.currentQuestion?.options.map((option, idx) => {
                     const isSelected = selectedOption === idx;
                     const isHidden = hiddenOptions.includes(idx);
@@ -218,24 +254,24 @@ const App: React.FC = () => {
                         disabled={!!feedback || gameState.isLoading || isHidden} 
                         onClick={() => handleAnswer(idx)}
                         onMouseEnter={() => !feedback && !isHidden && playSFX(AUDIO_URLS.hover, 0.1)}
-                        className={`group relative p-5 rounded-2xl border-2 text-left font-bold transition-all duration-300 option-card-hover ${isHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}
-                          ${isSelected && !feedback ? 'border-yellow-400 bg-yellow-400/20 ring-2 ring-yellow-400/50' : ''}
-                          ${showCorrect ? 'border-green-500 bg-green-500/20' : ''}
+                        className={`group relative p-6 rounded-3xl border-2 text-left font-bold transition-all duration-300 option-card-hover ${isHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}
+                          ${isSelected && !feedback ? 'border-yellow-400 bg-yellow-400/20 ring-4 ring-yellow-400/20 shadow-2xl scale-[1.02]' : ''}
+                          ${showCorrect ? 'border-green-500 bg-green-500/20 shadow-[0_0_20px_rgba(34,197,94,0.3)]' : ''}
                           ${showIncorrect ? 'border-red-500 bg-red-500/20' : ''}
-                          ${!isSelected && !feedback ? 'border-blue-500/30 bg-slate-800/40 hover:border-blue-400 hover:bg-slate-700/60' : ''}`}
+                          ${!isSelected && !feedback ? 'border-blue-500/20 bg-slate-800/40 hover:border-blue-500/60 hover:bg-slate-700/60' : ''}`}
                       >
-                        <div className="flex items-center gap-4">
-                          <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black border transition-colors ${isSelected ? 'bg-yellow-500 text-slate-900' : 'bg-blue-600/30 text-blue-200 border-blue-400/30'}`}>
+                        <div className="flex items-center gap-5">
+                          <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-black border transition-all ${isSelected ? 'bg-yellow-500 text-slate-900 border-yellow-300' : 'bg-blue-600/20 text-blue-300 border-blue-400/20 group-hover:bg-blue-500 group-hover:text-white'}`}>
                             {['A','B','C','D'][idx]}
                           </span>
-                          <span className="text-base md:text-lg text-slate-100">{option}</span>
-                          {showCorrect && <CheckCircle2 className="w-6 h-6 text-green-500 ml-auto animate-in zoom-in" />}
-                          {showIncorrect && <XCircle className="w-6 h-6 text-red-500 ml-auto animate-in zoom-in" />}
+                          <span className="text-lg md:text-xl text-slate-100 tracking-tight">{option}</span>
+                          {showCorrect && <CheckCircle2 className="w-8 h-8 text-green-500 ml-auto animate-in zoom-in duration-300" />}
+                          {showIncorrect && <XCircle className="w-8 h-8 text-red-500 ml-auto animate-in zoom-in duration-300" />}
                         </div>
                         {showStudentsPoll && !isHidden && (
-                          <div className="mt-3 h-2 w-full bg-slate-700 rounded-full overflow-hidden relative">
-                            <div className="h-full bg-purple-500 transition-all duration-1000" style={{ width: `${showStudentsPoll[idx]}%` }} />
-                            <div className="absolute right-0 top-[-16px] text-[10px] text-purple-300 font-black">{showStudentsPoll[idx]}%</div>
+                          <div className="mt-4 h-2.5 w-full bg-slate-800 rounded-full overflow-hidden relative border border-white/5">
+                            <div className="h-full bg-gradient-to-r from-purple-600 to-blue-500 transition-all duration-1000 ease-out" style={{ width: `${showStudentsPoll[idx]}%` }} />
+                            <div className="absolute right-2 top-[-1.1rem] text-[9px] text-blue-300 font-black uppercase tracking-tighter">{showStudentsPoll[idx]}% dos Convidados</div>
                           </div>
                         )}
                       </button>
@@ -244,9 +280,12 @@ const App: React.FC = () => {
                 </div>
                 
                 {feedback === 'correct' && (
-                  <div className="mt-10 p-5 bg-green-500/10 border border-green-500/30 rounded-2xl text-green-200 text-sm animate-in slide-in-from-bottom-2 duration-500 w-full">
-                    <span className="font-black text-green-400 uppercase tracking-tighter mr-2">Explicação:</span> 
-                    {gameState.currentQuestion?.explanation}
+                  <div className="mt-12 p-6 bg-green-500/10 border-2 border-green-500/20 rounded-[2rem] text-green-100 text-base animate-in slide-in-from-bottom-6 duration-700 w-full shadow-lg backdrop-blur-sm">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Sparkles className="text-green-400" size={20} />
+                      <span className="font-black text-green-400 uppercase tracking-[0.2em] text-xs">Ponto Gramatical</span> 
+                    </div>
+                    <p className="font-medium leading-relaxed italic">{gameState.currentQuestion?.explanation}</p>
                   </div>
                 )}
               </div>
@@ -255,24 +294,26 @@ const App: React.FC = () => {
           
           {/* Lifelines */}
           {!gameState.isGameOver && !gameState.isLoading && (
-            <Lifelines 
-              available={gameState.lifelines} 
-              onSkip={useSkip} 
-              onCards={useCards} 
-              onStudents={useStudents} 
-              disabled={!!feedback} 
-            />
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+              <Lifelines 
+                available={gameState.lifelines} 
+                onSkip={useSkip} 
+                onCards={useCards} 
+                onStudents={useStudents} 
+                disabled={!!feedback} 
+              />
+            </div>
           )}
         </div>
 
-        {/* Escada de Prêmios */}
+        {/* Escada Lateral */}
         <PrizeLadder currentLevel={gameState.currentLevel} />
       </div>
       
-      <footer className="mt-12 text-slate-500 font-bold text-[10px] uppercase tracking-[0.3em] flex items-center gap-4">
+      <footer className="mt-12 text-slate-600 font-black text-[10px] uppercase tracking-[0.5em] flex items-center gap-4 opacity-50">
         <span>Show do Idioma &copy; 2024</span>
-        <span className="w-1 h-1 bg-slate-800 rounded-full"></span>
-        <span>Tecnologia Gemini AI</span>
+        <div className="w-1.5 h-1.5 bg-slate-700 rounded-full"></div>
+        <span>Powered by Gemini 3.0</span>
       </footer>
     </div>
   );

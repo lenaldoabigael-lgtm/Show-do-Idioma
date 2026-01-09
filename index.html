@@ -20,14 +20,25 @@
             min-height: 100vh;
         }
         .glow-gold {
-            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
+            box-shadow: 0 0 30px rgba(234, 179, 8, 0.3);
         }
         .option-card-hover {
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .option-card-hover:hover:not(:disabled) {
             transform: translateY(-4px);
             box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+        }
+        /* Ajuste para o scrollbar da escada de prêmios */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.5);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 10px;
         }
     </style>
 <script type="importmap">
