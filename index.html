@@ -7,25 +7,53 @@
     <title>Show do Idioma</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body {
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            animation: {
+              'float': 'float 3s ease-in-out infinite',
+              'mouth': 'mouth-talk 0.15s ease-in-out infinite',
+              'blink': 'blink 4s infinite',
+              'tilt': 'head-tilt 1s ease-in-out infinite',
+              'jump': 'celebrate-jump 0.4s ease-in-out infinite',
+              'droop': 'sad-droop 4s ease-in-out infinite',
+              'eyes-think': 'eyes-think 1.5s ease-in-out infinite',
+            }
+          }
+        }
+      }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+          body {
+            @apply bg-slate-950 text-slate-50 overflow-x-hidden;
             font-family: 'Montserrat', sans-serif;
-            background-color: #020617;
-            color: #f8fafc;
-            margin: 0;
-            overflow-x: hidden;
-        }
-        .glow-blue {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-        }
-        .glow-gold {
-            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
-        }
-        .bg-gradient-stage {
-            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+          }
         }
 
-        /* Refined Host Animations */
+        @layer components {
+          .glow-blue {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+          }
+          .glow-gold {
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
+          }
+          .bg-gradient-stage {
+            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+          }
+          .host-shadow {
+            filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.4));
+          }
+          .option-card-hover {
+            @apply transition-all duration-300;
+          }
+          .option-card-hover:hover {
+            @apply -translate-y-1 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)];
+          }
+        }
+
+        /* Keyframes para as animações do Host */
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-12px); }
@@ -56,23 +84,6 @@
           25% { transform: translateX(-2px); }
           75% { transform: translateX(2px); }
         }
-
-        .animate-float { animation: float 3s ease-in-out infinite; }
-        .animate-mouth { animation: mouth-talk 0.15s ease-in-out infinite; }
-        .animate-blink { animation: blink 4s infinite; }
-        .animate-tilt { animation: head-tilt 1s ease-in-out infinite; }
-        .animate-jump { animation: celebrate-jump 0.4s ease-in-out infinite; }
-        .animate-droop { animation: sad-droop 4s ease-in-out infinite; }
-        .animate-eyes-think { animation: eyes-think 1.5s ease-in-out infinite; }
-        
-        .host-shadow {
-          filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.4));
-        }
-
-        .option-card-hover:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
-        }
     </style>
 <script type="importmap">
 {
@@ -86,7 +97,7 @@
 }
 </script>
 </head>
-<body>
+<body class="bg-gradient-stage">
     <div id="root"></div>
 </body>
 </html>
