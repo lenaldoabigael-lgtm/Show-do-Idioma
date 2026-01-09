@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { generateQuestion, getHostCommentary } from './geminiService';
 import { GameState, Language, Question, PRIZES } from './types';
 import { PrizeLadder } from './components/PrizeLadder';
@@ -113,7 +114,9 @@ const App: React.FC = () => {
 
   if (!gameStarted) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <>
+        <Analytics />
+        <div className="min-h-screen flex items-center justify-center p-6">
         <div className="max-w-3xl w-full bg-slate-900/90 rounded-3xl p-10 border-4 border-yellow-500 glow-gold text-center relative flex flex-col items-center">
           <div className="absolute top-4 right-4">
             <button onClick={() => setIsMuted(!isMuted)} className="p-2 bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors">
@@ -140,11 +143,14 @@ const App: React.FC = () => {
           <div className="text-slate-500 text-[10px] uppercase tracking-widest font-bold">Powered by Gemini AI • Real-time Education</div>
         </div>
       </div>
+    </>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
+    <>
+      <Analytics />
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
       <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 items-start justify-center">
         <div className="flex-1 w-full flex flex-col gap-6">
           {/* Header Barra de Progresso */}
@@ -275,6 +281,7 @@ const App: React.FC = () => {
         <span>Tecnologia Gemini AI</span>
       </footer>
     </div>
+  </>
   );
 };
 
