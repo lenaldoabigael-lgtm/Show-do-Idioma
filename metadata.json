@@ -1,0 +1,5 @@
+{
+  "name": "Show do Idioma",
+  "description": "A language learning game inspired by the 'Show do Milhão' format, using Gemini AI to generate dynamic grammar and vocabulary questions.",
+  "requestFramePermissions": []
+}
