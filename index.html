@@ -25,18 +25,68 @@
             background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
         }
 
+        /* Refined Host Animations */
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-12px); }
+        }
+        @keyframes mouth-talk {
+          0%, 100% { transform: scaleY(1); }
+          50% { transform: scaleY(0.2); }
+        }
+        @keyframes blink {
+          0%, 90%, 100% { transform: scaleY(1); }
+          95% { transform: scaleY(0.1); }
+        }
+        @keyframes head-tilt {
+          0%, 100% { transform: rotate(0deg); }
+          25% { transform: rotate(-2deg); }
+          75% { transform: rotate(2deg); }
+        }
+        @keyframes celebrate-jump {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-25px) scale(1.1); }
+        }
+        @keyframes sad-droop {
+          0%, 100% { transform: scaleY(1); }
+          50% { transform: scaleY(0.95) translateY(5px); }
+        }
+        @keyframes eyes-think {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-2px); }
+          75% { transform: translateX(2px); }
+        }
+
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-mouth { animation: mouth-talk 0.15s ease-in-out infinite; }
+        .animate-blink { animation: blink 4s infinite; }
+        .animate-tilt { animation: head-tilt 1s ease-in-out infinite; }
+        .animate-jump { animation: celebrate-jump 0.4s ease-in-out infinite; }
+        .animate-droop { animation: sad-droop 4s ease-in-out infinite; }
+        .animate-eyes-think { animation: eyes-think 1.5s ease-in-out infinite; }
+        
+        .host-shadow {
+          filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.4));
+        }
+
         .option-card-hover:hover {
           transform: translateY(-4px);
           box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
         }
     </style>
 <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0"
+  }
+}
 </script>
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="src/main.jsx"></script>
-
-<script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
