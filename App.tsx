@@ -5,6 +5,7 @@ import { GameState, Language, Question, PRIZES } from './types';
 import { PrizeLadder } from './components/PrizeLadder';
 import { Lifelines } from './components/Lifelines';
 import { Trophy, RotateCcw, Loader2, CheckCircle2, XCircle, Volume2, VolumeX, Sparkles, Info } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 
 const AUDIO_URLS = {
   background: 'https://assets.mixkit.co/music/preview/mixkit-mysterious-prowl-1105.mp3', 
@@ -274,6 +275,7 @@ const App: React.FC = () => {
         <span className="w-1 h-1 bg-slate-800 rounded-full"></span>
         <span>Tecnologia Gemini AI</span>
       </footer>
+      <Analytics />
     </div>
   );
 };
