@@ -2,7 +2,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Question, Language } from "./types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const generateQuestion = async (language: Language, level: number): Promise<Question> => {
   const difficulty = level <= 5 ? 'fácil' : level <= 10 ? 'médio' : level <= 15 ? 'difícil' : 'expert';
